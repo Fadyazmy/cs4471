@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { auth, firestore, createUserProfileDocument } from "../firebaseConfig";
+import Dashboard from "./Functions/Dashboard";
 
 class Home extends Component {
   state = {
@@ -34,9 +35,12 @@ class Home extends Component {
          *    stock_tickers: ['APPL', 'SOMETHING_ELSE']
          *   }
          */}
-        {console.log(this.state.user)}
         {this.state.user
-          ? [<div>(signed in) - Add your magic here Jake</div>]
+          ? [
+          
+            <Dashboard />
+        
+        ]
           : [<div>(not signed in) - HOME PAGE</div>]
           }
       </div>
