@@ -24,3 +24,7 @@ yarn-error.log*
 
 # firebase config
 firebaseConfig.js
+.firebase/
+
+# not needed
+package-lock.json
