@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { Form, Button, Row, Modal } from "react-bootstrap";
 import axios from 'axios'
