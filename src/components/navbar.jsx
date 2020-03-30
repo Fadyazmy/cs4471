@@ -72,7 +72,6 @@ class Navigation extends React.Component {
             <Typography variant="h6" color="inherit">
               <Link
                 to="#"
-                onClick={signOut}
                 style={{ color: "white", textDecoration: "none" }}
                 className="nav-link"
               >
