@@ -87,7 +87,7 @@ const StyledIconContainer = styled.div`
     justify-content: center;
 `;
 
-const Dashboard = () => {
+const Dashboard = ({user}) => {
 
     const {isShowing, show, hide} = UseModal();
 
@@ -102,11 +102,14 @@ const Dashboard = () => {
                 isShowing={isShowing}
                 close={hide}
                 title={title}
+                user={user}
             />
 
             <StockLookUpContainer className={classes.outerDiv}
             
                 onClick={() => {
+                console.log("CLICK", isShowing)
+                
                 show();
                 setTitle("Stock Ticker Lookup");}}>
             

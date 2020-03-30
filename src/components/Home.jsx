@@ -38,7 +38,7 @@ class Home extends Component {
         {this.state.user
           ? [
           
-            <Dashboard />
+            <Dashboard user={this.state.user}/>
         
         ]
           : [<div>(not signed in) - HOME PAGE</div>]
