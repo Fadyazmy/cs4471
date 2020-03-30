@@ -1,9 +1,24 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import {makeStyles} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import Modal from "../Modal/Modal";
 import UseModal from "../Modal/UseModal";
+
+const useStyles = makeStyles({
+    outerDiv: {
+      "&:hover": {
+        "& $Icon": {
+          color: "#fff"
+        }
+      }
+    },
+    Icon: () => ({
+      fontSize: 80,
+      color: "#3f51b5",
+    })
+  });
 
 const Container = styled.div`
 
@@ -18,6 +33,12 @@ const Container = styled.div`
     right: 0;
 `;
 
+const StyledText = styled.h1`
+    
+    color: #3f51b5;
+    text-align: center;
+`;
+
 const StockLookUpContainer = styled.div`
     
     flex-direction: column;
@@ -26,10 +47,15 @@ const StockLookUpContainer = styled.div`
     height: 80%;
     width: 80%;
     margin: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     
     &:hover { 
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         cursor: pointer;
+        background-color: #3f51b5;
+    }
+
+    &:hover ${StyledText} {
+        color: #fff;
     }
 `;
 
@@ -41,19 +67,17 @@ const PortfolioOptimizationContainer = styled.div`
     height: 80%;
     width: 80%;
     margin: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     
     &:hover { 
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         cursor: pointer;
+        background-color: #3f51b5;
+    }
+
+    &:hover ${StyledText} {
+        color: #fff;
     }
 `;
-
-const StyledText = styled.h1`
-    
-    color: #3f51b5;
-    text-align: center;
-`;
-
 
 const StyledIconContainer = styled.div`
     
@@ -69,6 +93,8 @@ const Dashboard = () => {
 
     const [title, setTitle] = useState("");
 
+    const classes = useStyles();
+
     return (
 
         <Container>
@@ -78,7 +104,9 @@ const Dashboard = () => {
                 title={title}
             />
 
-            <StockLookUpContainer onClick={() => {
+            <StockLookUpContainer className={classes.outerDiv}
+            
+                onClick={() => {
                 show();
                 setTitle("Stock Ticker Lookup");}}>
             
@@ -88,12 +116,14 @@ const Dashboard = () => {
                 </StyledText>
                 
                 <StyledIconContainer>
-                    <SearchIcon style={{color: "#3f51b5", fontSize: 80}} />
+                    <SearchIcon className={classes.Icon}/>
                 </StyledIconContainer>
 
             </StockLookUpContainer>
 
-            <PortfolioOptimizationContainer onClick={() => {
+            <PortfolioOptimizationContainer className={classes.outerDiv}
+
+                onClick={() => {
                 show();
                 setTitle("Portfolio Optimization");}}>
                 
@@ -102,7 +132,7 @@ const Dashboard = () => {
                 </StyledText>
 
                 <StyledIconContainer>
-                    <EqualizerIcon style={{color: "#3f51b5", fontSize: 80}} />
+                    <EqualizerIcon className={classes.Icon}/>
                 </StyledIconContainer>
 
             </PortfolioOptimizationContainer>
