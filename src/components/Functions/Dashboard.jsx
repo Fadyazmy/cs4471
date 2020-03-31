@@ -1,148 +1,225 @@
-import React, {useState} from 'react';
-import styled from 'styled-components';
-import {makeStyles} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import EqualizerIcon from '@material-ui/icons/Equalizer';
-import Modal from "../Modal/Modal";
-import UseModal from "../Modal/UseModal";
+import React, { Component } from "react";
+import styled from "styled-components";
+import { makeStyles } from "@material-ui/core";
+import { ListGroup, Row, Button, Form, Card } from "react-bootstrap";
+import axios from "axios";
+import { firestore } from "../../firebaseConfig";
 
 const useStyles = makeStyles({
-    outerDiv: {
-      "&:hover": {
-        "& $Icon": {
-          color: "#fff"
-        }
+  outerDiv: {
+    "&:hover": {
+      "& $Icon": {
+        color: "#fff"
       }
-    },
-    Icon: () => ({
-      fontSize: 80,
-      color: "#3f51b5",
-    })
-  });
+    }
+  },
+  Icon: () => ({
+    fontSize: 80,
+    color: "#3f51b5"
+  })
+});
 
 const Container = styled.div`
-
-    display: flex;
-    margin: auto;
-    height: 500px;
-    width: 80%;
-    position: absolute;
-    top:0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+  display: flex;
+  margin: auto;
+  height: 500px;
+  width: 80%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 `;
 
-const StyledText = styled.h1`
-    
-    color: #3f51b5;
-    text-align: center;
-`;
+class Dashboard extends Component {
+  state = {
+    tickers: [],
+    recommendations: [],
+    recommendations_lookup: false
+  };
 
-const StockLookUpContainer = styled.div`
-    
-    flex-direction: column;
-    flex-basis: 100%;
-    flex: 1;
-    height: 80%;
-    width: 80%;
-    margin: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    
-    &:hover { 
-        cursor: pointer;
-        background-color: #3f51b5;
+  onChangeHandle = e => {
+    let val = e.target.value;
+    if (this.state.tickers.indexOf(val) < 0) {
+      // Add to tickers array
+      this.setState({ tickers: [...this.state.tickers, val] });
+    } else {
+      // Remove ticker from array
+      this.setState({
+        tickers: this.state.tickers.filter(function(item) {
+          return item !== val;
+        })
+      });
     }
+  };
 
-    &:hover ${StyledText} {
-        color: #fff;
+  handleSubmit = event => {
+    event.preventDefault();
+    event.stopPropagation();
+    let body = { tickers: this.state.tickers, uid: this.props.user.id };
+
+    axios.post("http://<someurl-tbd>", body).then(res => {
+      console.log(res);
+    });
+  };
+
+  handleTransaction = rec => {
+    // TODO:
+    // update transaction that it's been executed - DONE
+    console.log("Rec transaction", rec);
+    firestore
+      .collection("recommendations")
+      .doc(rec.id)
+      .update({ exec: true });
+
+    // udpate user balance
+    if (rec.action === "sell") {
+      firestore
+        .collection("users")
+        .doc(rec.uid)
+        .update({ balance: this.props.user.balance + Number(rec.price) });
+    } else {
+      firestore
+        .collection("users")
+        .doc(rec.uid)
+        .update({ balance: this.props.user.balance - Number(rec.price)});
     }
-`;
+  };
 
-const PortfolioOptimizationContainer = styled.div`
+  render() {
+    console.log("id: ", this.props.user);
+    let recommendations_temp = [];
 
-    flex-direction: column;
-    flex-basis: 100%;
-    flex: 1;
-    height: 80%;
-    width: 80%;
-    margin: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    
-    &:hover { 
-        cursor: pointer;
-        background-color: #3f51b5;
+    if (
+      this.props.user &&
+      this.props.user.id &&
+      this.state.recommendations.length == 0 &&
+      !this.state.recommendations_lookup
+    ) {
+      firestore
+        .collection("recommendations")
+        .where("uid", "==", this.props.user.id)
+        .where("exec", "==", false)
+        .onSnapshot(snapshot => {
+          if (snapshot.empty) {
+            console.log("No user recommendations.");
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            console.log("doc.id: ", doc.id);
+            let stock = doc.data();
+            recommendations_temp.push({ id: doc.id, ...stock });
+          });
+
+          this.setState({
+            recommendations_lookup: true,
+            recommendations: recommendations_temp
+          });
+        });
     }
-
-    &:hover ${StyledText} {
-        color: #fff;
-    }
-`;
-
-const StyledIconContainer = styled.div`
-    
-    position: relative;
-    top: 25%;
-    text-align: center;
-    justify-content: center;
-`;
-
-const Dashboard = ({user}) => {
-
-    const {isShowing, show, hide} = UseModal();
-
-    const [title, setTitle] = useState("");
-
-    const classes = useStyles();
+    console.log("this.state: ", this.state);
 
     return (
-
-        <Container>
-            <Modal
-                isShowing={isShowing}
-                close={hide}
-                title={title}
-                user={user}
-            />
-
-            <StockLookUpContainer className={classes.outerDiv}
-            
-                onClick={() => {
-                console.log("CLICK", isShowing)
-                
-                show();
-                setTitle("Stock Ticker Lookup");}}>
-            
-                
-                <StyledText>
-                    Stock Ticker Lookup
-                </StyledText>
-                
-                <StyledIconContainer>
-                    <SearchIcon className={classes.Icon}/>
-                </StyledIconContainer>
-
-            </StockLookUpContainer>
-
-            <PortfolioOptimizationContainer className={classes.outerDiv}
-
-                onClick={() => {
-                show();
-                setTitle("Portfolio Optimization");}}>
-                
-                <StyledText>
-                    Portfolio Optimization
-                </StyledText>
-
-                <StyledIconContainer>
-                    <EqualizerIcon className={classes.Icon}/>
-                </StyledIconContainer>
-
-            </PortfolioOptimizationContainer>
-
-        </Container>
+      <Container style={{ display: "table-row" }}>
+        <Row style={{ width: "100%" }}>
+          <Row style={{ width: "100%" }}>
+            <h3>Summary</h3>
+          </Row>
+          <Card border="info" style={{ width: "18rem" }}>
+            <Card.Header
+              style={{
+                display: "flex",
+                justifyContent: "center"
+              }}
+            >
+              Balance
+            </Card.Header>
+            <Card.Body
+              style={{
+                display: "flex",
+                alignSelf: "center"
+              }}
+            >
+              <Card.Title>
+                {this.props.user && this.props.user.balance
+                  ? this.props.user.balance
+                  : 0}
+              </Card.Title>
+            </Card.Body>
+          </Card>
+        </Row>
+        <br />
+        <Row style={{ width: "100%" }}>
+          <Row style={{ width: "100%" }}>
+            <h3>Stock Ticker Lookup</h3>
+          </Row>
+          <ListGroup style={{ width: "100%" }}>
+            {this.state.recommendations.map(rec => (
+              <>
+                {rec.action == "buy" ? (
+                  <ListGroup.Item>
+                    Buy {`$${rec.price} of ${rec.stock} stock`}{" "}
+                    <Button variant="success">Buy</Button>
+                  </ListGroup.Item>
+                ) : (
+                  <ListGroup.Item>
+                    Sell {`$${rec.price} of ${rec.stock} stock`}{" "}
+                    <Button
+                      variant="info"
+                      onClick={() => this.handleTransaction(rec)}
+                    >
+                      Sell
+                    </Button>
+                  </ListGroup.Item>
+                )}
+              </>
+            ))}
+          </ListGroup>
+        </Row>
+        <br />
+        <Row>
+          <Row style={{ width: "100%" }}>
+            <h3>Portfolio recommendations</h3>
+          </Row>
+          <Row>
+            <Form onSubmit={this.handleSubmit}>
+              <Form.Group controlId="formBasicEmail">
+                <Form.Label>Tickers</Form.Label>
+                <Form.Check
+                  type={"checkbox"}
+                  onChange={this.onChangeHandle}
+                  id={`ticker-1`}
+                  name={`tickers`}
+                  value={"AAPL"}
+                  label={`AAPL`}
+                />
+                <Form.Check
+                  type={"checkbox"}
+                  onChange={this.onChangeHandle}
+                  id={`ticker-2`}
+                  name={`tickers`}
+                  value={`AMZN`}
+                  label={`AMZN`}
+                />
+                <Form.Check
+                  type={"checkbox"}
+                  onChange={this.onChangeHandle}
+                  id={`ticker-3`}
+                  name={`tickers`}
+                  value={`GOOG`}
+                  label={`GOOG`}
+                />
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+            </Form>
+          </Row>
+        </Row>
+      </Container>
     );
-
+  }
 }
 
 export default Dashboard;

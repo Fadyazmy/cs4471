@@ -11,10 +11,10 @@ class Home extends Component {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
         userRef.onSnapshot(snapshot => {
-          if (!snapshot.data().emailVerified && userAuth.emailVerified) {
+          if (snapshot.data().balance < 0) {
             firestore
               .doc(`/users/${snapshot.id}`)
-              .update({ emailVerified: userAuth.emailVerified });
+              .update({ balance: 100, num_transactions: 0 });
           }
           this.setState({ user: { id: snapshot.id, ...snapshot.data() } });
         });

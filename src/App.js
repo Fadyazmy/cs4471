@@ -6,6 +6,7 @@ import Home from "./components/Home";
 import Navbar from "./components/navbar";
 import Modal from "./components/Modal/Modal";
 
+
 import { Route, BrowserRouter as Router } from "react-router-dom";
 
 class Application extends Component {
