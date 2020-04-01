@@ -1,34 +1,45 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { makeStyles } from "@material-ui/core";
-import { ListGroup, Row, Button, Form, Card } from "react-bootstrap";
 import axios from "axios";
 import { firestore } from "../../firebaseConfig";
-
-const useStyles = makeStyles({
-  outerDiv: {
-    "&:hover": {
-      "& $Icon": {
-        color: "#fff"
-      }
-    }
-  },
-  Icon: () => ({
-    fontSize: 80,
-    color: "#3f51b5"
-  })
-});
+import Summary from "./Summary";
+import StockLookUp from "./StockLookUp";
+import PortfolioOptimization from "./PortfolioOptimization";
 
 const Container = styled.div`
-  display: flex;
   margin: auto;
-  height: 500px;
-  width: 80%;
+  height: 550px;
+  max-width: 745px;
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+`;
+
+const Row = styled.div`
+    margin-top: 50px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+`;
+
+const LeftColumn = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+    height: 350px;
+`;
+
+const RightColumn = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+    height: 350px;
+    margin-left: 40px;
 `;
 
 class Dashboard extends Component {
@@ -93,7 +104,7 @@ class Dashboard extends Component {
     if (
       this.props.user &&
       this.props.user.id &&
-      this.state.recommendations.length == 0 &&
+      this.state.recommendations.length === 0 &&
       !this.state.recommendations_lookup
     ) {
       firestore
@@ -122,101 +133,15 @@ class Dashboard extends Component {
 
     return (
       <Container style={{ display: "table-row" }}>
-        <Row style={{ width: "100%" }}>
-          <Row style={{ width: "100%" }}>
-            <h3>Summary</h3>
-          </Row>
-          <Card border="info" style={{ width: "18rem" }}>
-            <Card.Header
-              style={{
-                display: "flex",
-                justifyContent: "center"
-              }}
-            >
-              Balance
-            </Card.Header>
-            <Card.Body
-              style={{
-                display: "flex",
-                alignSelf: "center"
-              }}
-            >
-              <Card.Title>
-                {this.props.user && this.props.user.balance
-                  ? this.props.user.balance
-                  : 0}
-              </Card.Title>
-            </Card.Body>
-          </Card>
-        </Row>
-        <br />
-        <Row style={{ width: "100%" }}>
-          <Row style={{ width: "100%" }}>
-            <h3>Stock Ticker Lookup</h3>
-          </Row>
-          <ListGroup style={{ width: "100%" }}>
-            {this.state.recommendations.map(rec => (
-              <>
-                {rec.action == "buy" ? (
-                  <ListGroup.Item>
-                    Buy {`$${rec.price} of ${rec.stock} stock`}{" "}
-                    <Button variant="success">Buy</Button>
-                  </ListGroup.Item>
-                ) : (
-                  <ListGroup.Item>
-                    Sell {`$${rec.price} of ${rec.stock} stock`}{" "}
-                    <Button
-                      variant="info"
-                      onClick={() => this.handleTransaction(rec)}
-                    >
-                      Sell
-                    </Button>
-                  </ListGroup.Item>
-                )}
-              </>
-            ))}
-          </ListGroup>
-        </Row>
-        <br />
         <Row>
-          <Row style={{ width: "100%" }}>
-            <h3>Portfolio recommendations</h3>
-          </Row>
-          <Row>
-            <Form onSubmit={this.handleSubmit}>
-              <Form.Group controlId="formBasicEmail">
-                <Form.Label>Tickers</Form.Label>
-                <Form.Check
-                  type={"checkbox"}
-                  onChange={this.onChangeHandle}
-                  id={`ticker-1`}
-                  name={`tickers`}
-                  value={"AAPL"}
-                  label={`AAPL`}
-                />
-                <Form.Check
-                  type={"checkbox"}
-                  onChange={this.onChangeHandle}
-                  id={`ticker-2`}
-                  name={`tickers`}
-                  value={`AMZN`}
-                  label={`AMZN`}
-                />
-                <Form.Check
-                  type={"checkbox"}
-                  onChange={this.onChangeHandle}
-                  id={`ticker-3`}
-                  name={`tickers`}
-                  value={`GOOG`}
-                  label={`GOOG`}
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </Form>
-          </Row>
+        <LeftColumn>
+            <Summary user={this.props.user}/>
+        </LeftColumn>
+        <RightColumn>
+            <StockLookUp />
+        </RightColumn>
         </Row>
+        <PortfolioOptimization />
       </Container>
     );
   }

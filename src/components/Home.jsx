@@ -11,7 +11,7 @@ class Home extends Component {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
         userRef.onSnapshot(snapshot => {
-          if (snapshot.data().balance < 0) {
+          if (snapshot.data().balance == null) {
             firestore
               .doc(`/users/${snapshot.id}`)
               .update({ balance: 100, num_transactions: 0 });
