@@ -9,7 +9,7 @@ import PortfolioOptimization from "./PortfolioOptimization";
 const Container = styled.div`
   margin: auto;
   height: 550px;
-  max-width: 745px;
+  max-width: 900px;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -45,6 +45,7 @@ const RightColumn = styled.div`
 class Dashboard extends Component {
   state = {
     tickers: [],
+    quantities: [],
     recommendations: [],
     recommendations_lookup: false
   };
@@ -70,14 +71,14 @@ class Dashboard extends Component {
     let body = { tickers: this.state.tickers, uid: this.props.user.id };
 
     axios.post("http://<someurl-tbd>", body).then(res => {
-      console.log(res);
+      // console.log(res);
     });
   };
 
   handleTransaction = rec => {
     // TODO:
     // update transaction that it's been executed - DONE
-    console.log("Rec transaction", rec);
+    // console.log("Rec transaction", rec);
     firestore
       .collection("recommendations")
       .doc(rec.id)
@@ -98,7 +99,7 @@ class Dashboard extends Component {
   };
 
   render() {
-    console.log("id: ", this.props.user);
+    // console.log("id: ", this.props.user);
     let recommendations_temp = [];
 
     if (
@@ -113,7 +114,7 @@ class Dashboard extends Component {
         .where("exec", "==", false)
         .onSnapshot(snapshot => {
           if (snapshot.empty) {
-            console.log("No user recommendations.");
+            // console.log("No user recommendations.");
             return;
           }
 
@@ -129,7 +130,7 @@ class Dashboard extends Component {
           });
         });
     }
-    console.log("this.state: ", this.state);
+    // console.log("this.state: ", this.state);
 
     return (
       <Container style={{ display: "table-row" }}>
@@ -138,7 +139,7 @@ class Dashboard extends Component {
             <Summary user={this.props.user}/>
         </LeftColumn>
         <RightColumn>
-            <StockLookUp />
+            <StockLookUp tickers={this.state.tickers} quantities={this.state.quantities}/>
         </RightColumn>
         </Row>
         <PortfolioOptimization />

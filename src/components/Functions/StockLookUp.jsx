@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -47,11 +47,12 @@ const Input = styled.input`
   
     background-color: #3f51b5;
     transition: 0.3s background-color ease-in-out, 0.3s box-shadow ease-in-out;
-    width: 60%;
+    width: 55%;
     height: 50px;
     position: relative;
     margin-top: 20px;
     margin-left: 10px;
+    margin-right: 10px;
     padding: 0px 10px;
     border: none;
     border-radius: 4px;
@@ -67,16 +68,44 @@ const Input = styled.input`
     }
 `;
 
-const StockLookUp = () => {
+const InputContainer = styled.div`
+    display: flex;
+    justify-content: center;
+`;
+
+const StockLookUp = (tickers) => {
+
+    console.log('tickers: ', tickers)
+    const [ticker, setTicker] = useState('');
+    const [quantity, setQuantity] = useState(0);
+    const [stockValue, setStockValue] = useState('');
+    const [quantityValue, setQuantityValue] = useState('');
+
+    const addStock = (ticker) => {
+        tickers.tickers.push(ticker);
+        
+    }
+
+    const addQuantity = (quantity) => {
+        tickers.quantities.push(quantity);
+    }
+
+  const handleClick = () => {
+    setStockValue('');
+    setQuantityValue('');
+  }
 
     return (
 
         <Container>
             <StyledTitle>Stock Ticker Look Up</StyledTitle>
                 <StyledHeader>Add stock to portfolio</StyledHeader>
-                <Input placeholder="Enter a stock ticker"></Input>
+                <InputContainer>
+                    <Input placeholder="Enter a stock ticker" value={stockValue} onChange={(event) => {setTicker(event.target.value); setStockValue(event.target.value)}}></Input>
+                    <Input placeholder="Enter number of shares" value={quantityValue} onChange={(event) => {setQuantity(event.target.value); setQuantityValue(event.target.value)}}></Input>
+                </InputContainer>
                 <ButtonContainer>
-                    <StyledButton>Submit</StyledButton>
+                    <StyledButton onClick={() => {addStock(ticker); addQuantity(quantity); alert('Stock and quantity added succesfully'); handleClick()}}>Submit</StyledButton>
                 </ButtonContainer>
         </Container> 
     );

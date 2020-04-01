@@ -47,8 +47,8 @@ const Summary = (user) => {
                 <StyledBody>
                     <StyledHeader>Balance</StyledHeader>
                     <Balance>$
-                        {user && user.balance
-                        ? user.balance
+                        {user.user && user.user.balance
+                        ? user.user.balance
                         : 0}
                     </Balance>
                 </StyledBody>
