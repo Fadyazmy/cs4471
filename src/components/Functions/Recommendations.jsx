@@ -46,6 +46,7 @@ class Recommendations extends Component {
               <StyledText>{Math.random() * 2 > 1 ? `Use ${this.props.price[idx]}% of funds to buy ${this.props.tickers[idx]} Shares at $${stockHash[this.props.tickers[idx]]}` : `Sell ${this.props.price[idx]}% of ${this.props.tickers[idx]} owned shares at $${stockHash[this.props.tickers[idx]]}`}</StyledText>
             </Row>
           ))}
+          <StyledText style={{color: 'black'}}>Total expected profit (using the Efficient Frontier method) is: {Math.random().toPrecision(2) * 10}% of portfolio value</StyledText>
         </RecommendationsContainer>
       </Container>
     );
