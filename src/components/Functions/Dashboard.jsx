@@ -8,6 +8,7 @@ import {
 } from "../../firebaseConfig";
 import StockLookUp from "./StockLookUp";
 import PortfolioOptimization from "./PortfolioOptimization";
+import Recommendations from "./Recommendations";
 import { Card, Form, Button } from "react-bootstrap";
 
 const Container = styled.div`
@@ -36,7 +37,8 @@ class Dashboard extends Component {
     recommendations: [],
     recommendations_lookup: false,
     EF_BTN_flag: false,
-    user: {}
+    user: {},
+    price: [],
   };
 
   onChangeHandle = e => {
@@ -77,7 +79,9 @@ class Dashboard extends Component {
       uid: this.props.user.id
     };
 
-    axios.post("http://<someurl-tbd>", body).then(res => {
+    axios.post("http://e25586d7.eu.ngrok.io/users?uid=OqtorhEjYza1tTkBsnxmhMDPibF3&tickers=[AAPL,MSFT,NFLX,TSLA]&quantity=[100,500,400,100]", body).then(res => {
+
+    this.setState({price: res.data.price});
     });
   };
 
@@ -120,9 +124,15 @@ class Dashboard extends Component {
         });
     }
 
+    console.log("TEST:", this.state.price.array);
     return (
       <Container style={{ display: "table-row" }}>
         <Row>
+        {this.state.price.array !== undefined && <Card style={{ width: "100%", maxHeight: '350px'}}>
+            <Card.Body>
+               <Recommendations price={this.state.price.length > 0 ? this.state.price.split('0.') : []}/>
+            </Card.Body>
+    </Card> }
           <Card style={{ width: "100%" }}>
             <Card.Body>
               <PortfolioOptimization EF_BTN={this.EF_BTN} />
@@ -131,7 +141,7 @@ class Dashboard extends Component {
           {EF_BTN_flag && (
             <Card style={{ width: "100%" }}>
               <Card.Body>
-                <Form>
+                <Form onSubmit={this.handleSubmit}>
                   <Form.Group controlId="formBasicPassword">
                     <Form.Label>Tickers</Form.Label>
                     <Form.Control
