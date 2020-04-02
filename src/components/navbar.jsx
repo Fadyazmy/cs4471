@@ -71,7 +71,7 @@ class Navigation extends React.Component {
           <Route>
             <Typography variant="h6" color="inherit">
               <Link
-                to="#"
+                to="/"
                 style={{ color: "white", textDecoration: "none" }}
                 className="nav-link"
               >
