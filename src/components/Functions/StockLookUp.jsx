@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, { Component } from 'react';
 import styled from "styled-components";
+import axios from "axios";
 
 const Container = styled.div`
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -73,26 +74,55 @@ const InputContainer = styled.div`
     margin-top: 20px;
 `;
 
-const StockLookUp = () => {
+class StockLookUp extends Component {
 
-    const [ticker, setTicker] = useState('');
-    const [stockValue, setStockValue] = useState('');
-    console.log('search: ', ticker)
+    state = {
+        modal: false,
+        image_src: "",
+        ticker: "",
+        start_date: "",
+        end_date: "",
+    }
 
-    const handleClick = () => {
-        setStockValue('');
-  }
+    render() {
 
-    return (
+        console.log("TEST STATE",this.state);
 
-        <Container>
-            <StyledTitle>Stock Ticker Look Up</StyledTitle>
+        const handleClick = () => {
+            let body = {ticker: this.state.ticker}
+            axios
+                .post(
+                    "http://77389926.eu.ngrok.io/",
+                    body
+                )
+                .then(response => {
+                    console.log(response);
+                    // open modal with image
+                });
+        }
+
+        const onChangeHandle = e => {
+            let state = {}
+            state[e.target.name] = e.target.value;
+            console.log("STATE", state);
+            this.setState(state);
+          };
+
+
+        return (
+
+            <Container>
+                <StyledTitle>Stock Ticker Look Up</StyledTitle>
                 <InputContainer>
-                <Input placeholder="Enter a stock ticker" value={stockValue} onChange={(event) => {setTicker(event.target.value); setStockValue(event.target.value)}}></Input>
-                    <StyledButton onClick={() => {handleClick()}}>Search</StyledButton>
+                    <form>
+                        <Input placeholder="Enter a stock ticker" name="ticker" value={this.state.ticker} onChange={this.onChangeHandle}></Input>
+                    </form>
+                    <StyledButton onClick={this.handleClick}>Search</StyledButton>
                 </InputContainer>
-        </Container> 
-    );
+            </Container>
+        );
+    }
+
 
 }
 
