@@ -37,7 +37,6 @@ const PortfolioOptimization = (props) => {
       <StyledTitle>Portfolio Optimization</StyledTitle>
       <ButtonContainer>
         <StyledButton onClick={props.EF_BTN}>Efficient Frontier</StyledButton>
-        <StyledButton>VaR Analysis</StyledButton>
       </ButtonContainer>
     </Container>
   );

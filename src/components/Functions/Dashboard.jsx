@@ -79,8 +79,9 @@ class Dashboard extends Component {
       uid: this.props.user.id
     };
 
-    axios.post("http://e25586d7.eu.ngrok.io/users?uid=OqtorhEjYza1tTkBsnxmhMDPibF3&tickers=[AAPL,MSFT,NFLX,TSLA]&quantity=[100,500,400,100]", body).then(res => {
+    axios.post("http://f2c56610.eu.ngrok.io/users?uid=OqtorhEjYza1tTkBsnxmhMDPibF3&tickers=[AAPL,MSFT,NFLX,TSLA]&quantity=[100,500,400,100]", body).then(res => {
 
+    console.log("data data", res.data)
     this.setState({price: res.data.price});
     });
   };
@@ -124,13 +125,13 @@ class Dashboard extends Component {
         });
     }
 
-    console.log("TEST:", this.state.price.array);
+    console.log("TEST:", this.state.price);
     return (
       <Container style={{ display: "table-row" }}>
         <Row>
-        {this.state.price.array !== undefined && <Card style={{ width: "100%", maxHeight: '350px'}}>
+        {this.state.price.length > 0 && <Card style={{ width: "100%", maxHeight: '350px'}}>
             <Card.Body>
-               <Recommendations price={this.state.price.length > 0 ? this.state.price.split('0.') : []}/>
+               <Recommendations tickers={this.state.tickers.split(',')} price={this.state.price.length > 0 ? this.state.price : []}/>
             </Card.Body>
     </Card> }
           <Card style={{ width: "100%" }}>
