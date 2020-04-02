@@ -1,10 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { firestore } from "../../firebaseConfig";
-import Summary from "./Summary";
+import {
+  firestore,
+  auth,
+  createUserProfileDocument
+} from "../../firebaseConfig";
 import StockLookUp from "./StockLookUp";
 import PortfolioOptimization from "./PortfolioOptimization";
+import { Card, Form, Button } from "react-bootstrap";
 
 const Container = styled.div`
   margin: auto;
@@ -18,28 +22,11 @@ const Container = styled.div`
 `;
 
 const Row = styled.div`
-    margin-top: 50px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
-`;
-
-const LeftColumn = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex-basis: 100%;
-    flex: 1;
-    height: 350px;
-`;
-
-const RightColumn = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex-basis: 100%;
-    flex: 1;
-    height: 350px;
-    margin-left: 40px;
+  margin-top: 25px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
 `;
 
 class Dashboard extends Component {
@@ -47,61 +34,63 @@ class Dashboard extends Component {
     tickers: [],
     quantities: [],
     recommendations: [],
-    recommendations_lookup: false
+    recommendations_lookup: false,
+    EF_BTN_flag: false,
+    user: {}
   };
 
   onChangeHandle = e => {
-    let val = e.target.value;
-    if (this.state.tickers.indexOf(val) < 0) {
-      // Add to tickers array
-      this.setState({ tickers: [...this.state.tickers, val] });
-    } else {
-      // Remove ticker from array
-      this.setState({
-        tickers: this.state.tickers.filter(function(item) {
-          return item !== val;
-        })
-      });
-    }
+    let state = {};
+    state[e.target.name] = e.target.value;
+    this.setState(state);
   };
+
+  componentDidMount() {
+    auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot(snapshot => {
+          this.setState({
+            user: {
+              id: snapshot.id,
+              ...snapshot.data()
+            },
+            tickers: snapshot.data().portfolio,
+            quantities: snapshot
+              .data()
+              .portfolio.split(",")
+              .map(() => "0, ")
+              .join("")
+              .slice(0, -2)
+          });
+        });
+      }
+    });
+  }
 
   handleSubmit = event => {
     event.preventDefault();
     event.stopPropagation();
-    let body = { tickers: this.state.tickers, uid: this.props.user.id };
+    let body = {
+      tickers: this.state.tickers,
+      quantity: this.state.quantities,
+      uid: this.props.user.id
+    };
 
     axios.post("http://<someurl-tbd>", body).then(res => {
-      // console.log(res);
     });
   };
 
-  handleTransaction = rec => {
-    // TODO:
-    // update transaction that it's been executed - DONE
-    // console.log("Rec transaction", rec);
-    firestore
-      .collection("recommendations")
-      .doc(rec.id)
-      .update({ exec: true });
-
-    // udpate user balance
-    if (rec.action === "sell") {
-      firestore
-        .collection("users")
-        .doc(rec.uid)
-        .update({ balance: this.props.user.balance + Number(rec.price) });
-    } else {
-      firestore
-        .collection("users")
-        .doc(rec.uid)
-        .update({ balance: this.props.user.balance - Number(rec.price)});
-    }
+  EF_BTN = () => {
+    console.log("BTN");
+    this.setState({ EF_BTN_flag: !this.state.EF_BTN_flag });
   };
 
   render() {
-    // console.log("id: ", this.props.user);
-    let recommendations_temp = [];
+    let { EF_BTN_flag } = this.state;
+    console.log("tickers:: ", this.state.tickers);
 
+    let recommendations_temp = [];
     if (
       this.props.user &&
       this.props.user.id &&
@@ -114,7 +103,7 @@ class Dashboard extends Component {
         .where("exec", "==", false)
         .onSnapshot(snapshot => {
           if (snapshot.empty) {
-            // console.log("No user recommendations.");
+            console.log("No user recommendations.");
             return;
           }
 
@@ -130,19 +119,53 @@ class Dashboard extends Component {
           });
         });
     }
-    // console.log("this.state: ", this.state);
 
     return (
       <Container style={{ display: "table-row" }}>
         <Row>
-        <LeftColumn>
-            <Summary user={this.props.user}/>
-        </LeftColumn>
-        <RightColumn>
-            <StockLookUp tickers={this.state.tickers} quantities={this.state.quantities}/>
-        </RightColumn>
+          <Card style={{ width: "100%" }}>
+            <Card.Body>
+              <PortfolioOptimization EF_BTN={this.EF_BTN} />
+            </Card.Body>
+          </Card>
+          {EF_BTN_flag && (
+            <Card style={{ width: "100%" }}>
+              <Card.Body>
+                <Form>
+                  <Form.Group controlId="formBasicPassword">
+                    <Form.Label>Tickers</Form.Label>
+                    <Form.Control
+                      value={this.state.tickers ? this.state.tickers : ""}
+                      onChange={this.onChangeHandle}
+                      name="tickers"
+                      type="text"
+                      placeholder=""
+                    />
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Ticker quantities</Form.Label>
+                    <Form.Control
+                      value={this.state.quantities ? this.state.quantities : ""}
+                      onChange={this.onChangeHandle}
+                      name="quantities"
+                      type="text"
+                      placeholder=""
+                    />
+                  </Form.Group>
+                  <Button onClick={this.handleSubmit} variant="primary" type="submit">
+                    Submit
+                  </Button>
+                </Form>
+              </Card.Body>
+            </Card>
+          )}
+          <Card style={{ width: "100%" }}>
+            <Card.Body>
+              <StockLookUp />
+            </Card.Body>
+          </Card>
         </Row>
-        <PortfolioOptimization />
+        <br />
       </Container>
     );
   }

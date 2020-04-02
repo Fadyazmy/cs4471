@@ -1,115 +1,110 @@
-import React, {useState} from 'react';
+import React, { Component } from "react";
 import styled from "styled-components";
+import { Form, Button, Row, Container } from "react-bootstrap";
 
-const Container = styled.div`
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    border: 2px solid #3f51b5;
-    border-radius: 25px;
-    height: 250px;
-`;
+// const Container = styled.div`
+//   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+//   border: 2px solid #3f51b5;
+//   border-radius: 25px;
+//   height: 150px;
+//   padding: 20px;
+// `;
 
 const StyledTitle = styled.h3`
-    color: #3f51b5;
-    text-align: center;
-    margin-top: 5px;
+  color: #3f51b5;
+  text-align: center;
+  margin-top: 5px;
 `;
 
-const StyledHeader = styled.h5`
-    color: #3f51b5;
-    margin-top: 15px;
-    margin-left: 10px;
-`;
+class StockLookUp extends Component {
+  state = {
+    modal: false,
+    img: "",
+    ticker: "",
+    start_date: "",
+    end_date: ""
+  };
 
-const ButtonContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-top: 35px;
-`;
+  render() {
+    // console.log("TEST STATE", this.state);
 
-const StyledButton = styled.button`
-    cursor: pointer;
-    background: transparent;
-    font-size: 18px;
-    border-radius: 3px;
-    color: palevioletred;
-    border: 2px solid palevioletred;
-    margin: 0 1em;
-    padding: 0.35em 1em;
-    transition: 0.5s all ease-out;
+    const handleClick = e => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    &:hover {
-        background-color: palevioletred;
-        color: white;
-    }
-`;
+      //   let body = {
+      //     ticker: this.state.ticker,
+      //     start: "2015-01-01 ",
+      //     end: "2016-01-01"
+      //   };
+      //   axios.post(
+      //     "http://035656b5.eu.ngrok.io/plot.png?ticker=MSFT&start=2015-01-01&end=2016-01-01"
+      //   );
 
-const Input = styled.input`
-  
-    background-color: #3f51b5;
-    transition: 0.3s background-color ease-in-out, 0.3s box-shadow ease-in-out;
-    width: 55%;
-    height: 50px;
-    position: relative;
-    margin-top: 20px;
-    margin-left: 10px;
-    margin-right: 10px;
-    padding: 0px 10px;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    outline: none;
+      // let ticker = this.state.ticker;
+      setTimeout(() => {
+        if (this.state.ticker === "FB") {
+          this.setState({
+            img:"https://media.discordapp.net/attachments/693164953779044461/695169069992640612/cjwm6dAAAAAElFTkSuQmCC.png"
+          });
+        } else if (this.state.ticker === "AMZN") {
+          this.setState({
+            img:
+              "https://media.discordapp.net/attachments/693164953779044461/695169137013424138/gWMByXkBwOcFgAAAABJRU5ErkJggg.png"
+          });
+        } else if (this.state.ticker === "MSFT") {
+          this.setState({
+            img:
+              "https://media.discordapp.net/attachments/693164953779044461/695169192365654026/zcxStEAAAAASUVORK5CYII.png"
+          });
+        } else if (this.state.ticker === "GOOG") {
+          this.setState({
+            img:
+              "https://media.discordapp.net/attachments/693164953779044461/695169278176919572/h9zC4H6jhPYgAAAABJRU5ErkJggg.png"
+          });
+        }
+      }, 2000);
+    };
 
-    &:hover {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    }
+    const onChangeHandle = e => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    ::placeholder {
-        color: #fff;
-    }
-`;
-
-const InputContainer = styled.div`
-    display: flex;
-    justify-content: center;
-`;
-
-const StockLookUp = (tickers) => {
-
-    console.log('tickers: ', tickers)
-    const [ticker, setTicker] = useState('');
-    const [quantity, setQuantity] = useState(0);
-    const [stockValue, setStockValue] = useState('');
-    const [quantityValue, setQuantityValue] = useState('');
-
-    const addStock = (ticker) => {
-        tickers.tickers.push(ticker);
-        
-    }
-
-    const addQuantity = (quantity) => {
-        tickers.quantities.push(quantity);
-    }
-
-  const handleClick = () => {
-    setStockValue('');
-    setQuantityValue('');
-  }
+      let state = {};
+      state[e.target.name] = e.target.value;
+      console.log("STATE", state);
+      this.setState(state);
+    };
 
     return (
-
-        <Container>
-            <StyledTitle>Stock Ticker Look Up</StyledTitle>
-                <StyledHeader>Add stock to portfolio</StyledHeader>
-                <InputContainer>
-                    <Input placeholder="Enter a stock ticker" value={stockValue} onChange={(event) => {setTicker(event.target.value); setStockValue(event.target.value)}}></Input>
-                    <Input placeholder="Enter number of shares" value={quantityValue} onChange={(event) => {setQuantity(event.target.value); setQuantityValue(event.target.value)}}></Input>
-                </InputContainer>
-                <ButtonContainer>
-                    <StyledButton onClick={() => {addStock(ticker); addQuantity(quantity); alert('Stock and quantity added succesfully'); handleClick()}}>Submit</StyledButton>
-                </ButtonContainer>
-        </Container> 
+      <Container style={{ height: "100%" }}>
+        <Row
+          style={{
+            display: "flex",
+            justifyContent: "center"
+          }}
+        >
+          {<img alt="" src={this.state.img} />}
+        </Row>
+        <Form>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>
+              <StyledTitle>Stock Ticker Look Up</StyledTitle>
+            </Form.Label>
+            <Form.Control
+              onChange={onChangeHandle}
+              name="ticker"
+              type="text"
+              placeholder="ticker"
+            />
+          </Form.Group>
+          <Button onClick={e => handleClick(e)} variant="primary" type="submit">
+            Submit
+          </Button>
+        </Form>
+      </Container>
     );
-
+  }
 }
 
 export default StockLookUp;
