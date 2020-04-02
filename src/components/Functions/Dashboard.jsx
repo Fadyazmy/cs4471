@@ -4,6 +4,7 @@ import axios from "axios";
 import { firestore } from "../../firebaseConfig";
 import Summary from "./Summary";
 import StockLookUp from "./StockLookUp";
+import BuySell from "./BuySell";
 import PortfolioOptimization from "./PortfolioOptimization";
 
 const Container = styled.div`
@@ -18,7 +19,7 @@ const Container = styled.div`
 `;
 
 const Row = styled.div`
-    margin-top: 50px;
+    margin-top: 25px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -139,10 +140,17 @@ class Dashboard extends Component {
             <Summary user={this.props.user}/>
         </LeftColumn>
         <RightColumn>
-            <StockLookUp tickers={this.state.tickers} quantities={this.state.quantities}/>
+            <BuySell tickers={this.state.tickers} quantities={this.state.quantities}/>
         </RightColumn>
         </Row>
-        <PortfolioOptimization />
+        <Row>
+        <LeftColumn>
+            <PortfolioOptimization />
+        </LeftColumn>
+        <RightColumn>
+            <StockLookUp />
+        </RightColumn>
+        </Row>
       </Container>
     );
   }

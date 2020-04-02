@@ -5,7 +5,7 @@ const Container = styled.div`
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border: 2px solid #3f51b5;
     border-radius: 25px;
-    height: 150px;
+    height: 250px;
 `;
 
 const StyledTitle = styled.h3`
@@ -48,8 +48,9 @@ const Input = styled.input`
     background-color: #3f51b5;
     transition: 0.3s background-color ease-in-out, 0.3s box-shadow ease-in-out;
     width: 55%;
-    height: 45px;
+    height: 50px;
     position: relative;
+    margin-top: 20px;
     margin-left: 10px;
     margin-right: 10px;
     padding: 0px 10px;
@@ -70,30 +71,45 @@ const Input = styled.input`
 const InputContainer = styled.div`
     display: flex;
     justify-content: center;
-    margin-top: 20px;
 `;
 
-const StockLookUp = () => {
+const BuySell = (tickers) => {
 
+    console.log('tickers: ', tickers)
     const [ticker, setTicker] = useState('');
+    const [quantity, setQuantity] = useState(0);
     const [stockValue, setStockValue] = useState('');
-    console.log('search: ', ticker)
+    const [quantityValue, setQuantityValue] = useState('');
 
-    const handleClick = () => {
-        setStockValue('');
+    const addStock = (ticker) => {
+        tickers.tickers.push(ticker);
+        
+    }
+
+    const addQuantity = (quantity) => {
+        tickers.quantities.push(quantity);
+    }
+
+  const handleClick = () => {
+    setStockValue('');
+    setQuantityValue('');
   }
 
     return (
 
         <Container>
-            <StyledTitle>Stock Ticker Look Up</StyledTitle>
+            <StyledTitle>Add stock to portfolio</StyledTitle>
+                {/* <StyledHeader>Add stock to portfolio</StyledHeader> */}
                 <InputContainer>
-                <Input placeholder="Enter a stock ticker" value={stockValue} onChange={(event) => {setTicker(event.target.value); setStockValue(event.target.value)}}></Input>
-                    <StyledButton onClick={() => {handleClick()}}>Search</StyledButton>
+                    <Input placeholder="Enter a stock ticker" value={stockValue} onChange={(event) => {setTicker(event.target.value); setStockValue(event.target.value)}}></Input>
+                    <Input placeholder="Enter number of shares" value={quantityValue} onChange={(event) => {setQuantity(event.target.value); setQuantityValue(event.target.value)}}></Input>
                 </InputContainer>
+                <ButtonContainer>
+                    <StyledButton onClick={() => {addStock(ticker); addQuantity(quantity); alert('Stock and quantity added succesfully'); handleClick()}}>Add</StyledButton>
+                </ButtonContainer>
         </Container> 
     );
 
 }
 
-export default StockLookUp;
+export default BuySell;
