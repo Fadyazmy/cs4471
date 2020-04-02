@@ -8,6 +8,7 @@ import Modal from "./components/Modal/Modal";
 
 
 import { Route, BrowserRouter as Router } from "react-router-dom";
+import Profile from "./components/Profile";
 
 class Application extends Component {
   render() {
@@ -17,6 +18,7 @@ class Application extends Component {
           <Navbar />
           <div>
             <Route path="/" component={Home} exact />
+            <Route path="/profile" component={Profile} exact />
             <Route path="/sign" component={SignIn} exact />
             <Route path="/register" component={Register} exact />
             <Route path="/test" component={Modal} />

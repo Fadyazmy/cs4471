@@ -23,7 +23,19 @@ class Navigation extends React.Component {
   authNavbar = function() {
     if (this.state.isAuthenticated) {
       return (
-        <ul className="navbar-nav my-2 my-lg-0">
+        <ul
+          style={{ flexDirection: "row" }}
+          className="navbar-nav my-2 my-lg-0"
+        >
+          <Button color="inherit">
+            <Link
+              to="/profile"
+              style={{ color: "white", textDecoration: "none" }}
+              className="nav-link"
+            >
+              Profile
+            </Link>
+          </Button>
           <Button color="inherit">
             <Link
               to="#"
@@ -38,7 +50,10 @@ class Navigation extends React.Component {
       );
     } else {
       return (
-        <ul className="navbar-nav my-2 my-lg-0">
+        <ul
+          style={{ flexDirection: "row" }}
+          className="navbar-nav my-2 my-lg-0"
+        >
           <Button color="inherit">
             <Link
               to="sign"
