@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import styled from "styled-components";
+import { firestore } from "../../firebaseConfig";
 
 const Container = styled.div`
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -75,19 +76,27 @@ const InputContainer = styled.div`
 
 const StockLookUp = (tickers) => {
 
-    console.log('tickers: ', tickers)
+    console.log('tickers: ', tickers.tickers)
     const [ticker, setTicker] = useState('');
-    const [quantity, setQuantity] = useState(0);
+    const [quantity, setQuantity] = useState('');
     const [stockValue, setStockValue] = useState('');
     const [quantityValue, setQuantityValue] = useState('');
 
+    const updatePortfolio = () => {
+        firestore
+                  .doc(`/users/${tickers.tickers.id}`)
+                  .update({ portfolio: tickers.tickers.portfolio, quantities: tickers.tickers.quantities });
+    }
+
     const addStock = (ticker) => {
-        tickers.tickers.push(ticker);
+
+        tickers.tickers.portfolio += ticker + ', ';
         
     }
 
     const addQuantity = (quantity) => {
-        tickers.quantities.push(quantity);
+        
+        tickers.tickers.quantities += quantity + ', ';
     }
 
   const handleClick = () => {
@@ -105,7 +114,7 @@ const StockLookUp = (tickers) => {
                     <Input placeholder="Enter number of shares" value={quantityValue} onChange={(event) => {setQuantity(event.target.value); setQuantityValue(event.target.value)}}></Input>
                 </InputContainer>
                 <ButtonContainer>
-                    <StyledButton onClick={() => {addStock(ticker); addQuantity(quantity); alert('Stock and quantity added succesfully'); handleClick()}}>Submit</StyledButton>
+                    <StyledButton onClick={() => {addStock(ticker); addQuantity(quantity); alert('Stock and quantity added succesfully'); handleClick(); updatePortfolio()}}>Submit</StyledButton>
                 </ButtonContainer>
         </Container> 
     );

@@ -139,7 +139,7 @@ class Dashboard extends Component {
             <Summary user={this.props.user}/>
         </LeftColumn>
         <RightColumn>
-            <StockLookUp tickers={this.state.tickers} quantities={this.state.quantities}/>
+            <StockLookUp tickers={this.props.user}/>
         </RightColumn>
         </Row>
         <PortfolioOptimization />
