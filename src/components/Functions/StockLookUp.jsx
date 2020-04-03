@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Form, Button, Row, Container } from "react-bootstrap";
+import axios from "axios";
 
 // const Container = styled.div`
 //   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -22,7 +23,9 @@ class StockLookUp extends Component {
     img: "",
     ticker: "",
     start_date: "",
-    end_date: ""
+    end_date: "",
+    error: false, 
+    loading: false
   };
 
   render() {
@@ -32,38 +35,31 @@ class StockLookUp extends Component {
       e.preventDefault();
       e.stopPropagation();
 
-      //   let body = {
-      //     ticker: this.state.ticker,
-      //     start: "2015-01-01 ",
-      //     end: "2016-01-01"
-      //   };
-      //   axios.post(
-      //     "http://035656b5.eu.ngrok.io/plot.png?ticker=MSFT&start=2015-01-01&end=2016-01-01"
-      //   );
-
-      // let ticker = this.state.ticker;
+      let body = {
+        ticker: this.state.ticker,
+        start: "2015-01-01 ",
+        end: "2016-01-01"
+      };
+      // try {
+      axios
+        .post(
+          `http://331b03cb.eu.ngrok.io/plot.png?ticker=${this.state.ticker}&start=2015-01-01&end=2016-01-01`
+        )
+        .then(resp => {
+          console.log("RESP: ", resp);
+        })
+        .catch(err => {
+          console.log("ERR: ", err);
+        });
       setTimeout(() => {
-        if (this.state.ticker === "FB") {
-          this.setState({
-            img:"https://media.discordapp.net/attachments/693164953779044461/695169069992640612/cjwm6dAAAAAElFTkSuQmCC.png"
-          });
-        } else if (this.state.ticker === "AMZN") {
-          this.setState({
-            img:
-              "https://media.discordapp.net/attachments/693164953779044461/695169137013424138/gWMByXkBwOcFgAAAABJRU5ErkJggg.png"
-          });
-        } else if (this.state.ticker === "MSFT") {
-          this.setState({
-            img:
-              "https://media.discordapp.net/attachments/693164953779044461/695169192365654026/zcxStEAAAAASUVORK5CYII.png"
-          });
-        } else if (this.state.ticker === "GOOG") {
-          this.setState({
-            img:
-              "https://media.discordapp.net/attachments/693164953779044461/695169278176919572/h9zC4H6jhPYgAAAABJRU5ErkJggg.png"
-          });
+        try {
+          const img = require(`https://firebasestorage.googleapis.com/v0/b/cs4471-group5.appspot.com/o/${this.state.ticker}.png?alt=media`);
+          this.setState({ img, loading: false });
+        } catch (err) {
+          //Do whatever you want when the image failed to load here
+          this.setState({ error: true, loading: false });
         }
-      }, 2000);
+      }, 7500);
     };
 
     const onChangeHandle = e => {
@@ -85,6 +81,8 @@ class StockLookUp extends Component {
           }}
         >
           {<img alt="" src={this.state.img} />}
+          {this.state.error && <h3> Error. Ticker not found. </h3>}
+          {this.state.loading && <h3> Loading </h3>}
         </Row>
         <Form>
           <Form.Group controlId="formBasicEmail">
@@ -98,7 +96,14 @@ class StockLookUp extends Component {
               placeholder="ticker"
             />
           </Form.Group>
-          <Button onClick={e => handleClick(e)} variant="primary" type="submit">
+          <Button
+            onClick={e => {
+              handleClick(e);
+              this.setState({ error: false, loading: true });
+            }}
+            variant="primary"
+            type="submit"
+          >
             Submit
           </Button>
         </Form>
