@@ -112,13 +112,14 @@ class Admin extends Component {
         .collection("registry")
         .doc(this.state.id)
         .update({
-          services_list: this.state.services_list + "," + this.state.new_service
+          services_list: this.state.services_list + (this.state.new_service==""?"":"," + this.state.new_service),
+          services: this.state.services
         });
     } else {
       firestore
         .collection("registry")
         .doc(this.state.id)
-        .update({ services_list: this.state.new_service });
+        .update({ services_list: this.state.new_service, services: this.state.services });
     }
 
     this.setState({ showToast: true });
@@ -177,12 +178,6 @@ class Admin extends Component {
                 placeholder="LOOKUP"
                 onChange={this.onChangeAddService}
               />
-              <Form.Text
-                onChange={this.onChangeAddService}
-                name="new_service"
-                value={this.state.new_service}
-                // className="text-muted"
-              ></Form.Text>
             </Form.Group>
             <Form.Group controlId="formBasicName">
               <Form.Label style={{ fontWeight: "bold" }}>
