@@ -39,6 +39,7 @@ class Dashboard extends Component {
     EF_BTN_flag: false,
     user: {},
     price: [],
+    services: ""
   };
 
   onChangeHandle = e => {
@@ -68,6 +69,24 @@ class Dashboard extends Component {
         });
       }
     });
+
+    firestore
+      .collection("registry")
+      .where("type", "==", "available")
+      .onSnapshot(snapshot => {
+        if (snapshot.empty) {
+          console.log("No registry available.");
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          //   console.log("doc.id: ", doc.id);
+          let { services } = doc.data();
+          // let id = doc.id;
+          //   console.log("HH: ", { id: doc.id, ...data });
+          this.setState({ services });
+        });
+      });
   }
 
   handleSubmit = event => {
@@ -79,11 +98,15 @@ class Dashboard extends Component {
       uid: this.props.user.id
     };
 
-    axios.post("http://f2c56610.eu.ngrok.io/users?uid=OqtorhEjYza1tTkBsnxmhMDPibF3&tickers=[AAPL,MSFT,NFLX,TSLA]&quantity=[100,500,400,100]", body).then(res => {
-
-    console.log("data data", res.data)
-    this.setState({price: res.data.price});
-    });
+    axios
+      .post(
+        "https://f2c56610.eu.ngrok.io/users?uid=OqtorhEjYza1tTkBsnxmhMDPibF3&tickers=[AAPL,MSFT,NFLX,TSLA]&quantity=[100,500,400,100]",
+        body
+      )
+      .then(res => {
+        console.log("data data", res.data);
+        this.setState({ price: res.data.price });
+      });
   };
 
   EF_BTN = () => {
@@ -125,20 +148,31 @@ class Dashboard extends Component {
         });
     }
 
-    console.log("TEST:", this.state.price);
+    console.log(
+      "SERVICES :",
+      this.state.services,
+      this.state.services.indexOf("EF") > -1
+    );
     return (
       <Container style={{ display: "table-row" }}>
         <Row>
-        {this.state.price.length > 0 && <Card style={{ width: "100%", maxHeight: '350px'}}>
-            <Card.Body>
-               <Recommendations tickers={this.state.tickers.split(',')} price={this.state.price.length > 0 ? this.state.price : []}/>
-            </Card.Body>
-    </Card> }
-          <Card style={{ width: "100%" }}>
-            <Card.Body>
-              <PortfolioOptimization EF_BTN={this.EF_BTN} />
-            </Card.Body>
-          </Card>
+          {this.state.price.length > 0 && (
+            <Card style={{ width: "100%", maxHeight: "350px" }}>
+              <Card.Body>
+                <Recommendations
+                  tickers={this.state.tickers.split(",")}
+                  price={this.state.price.length > 0 ? this.state.price : []}
+                />
+              </Card.Body>
+            </Card>
+          )}
+          {this.state.services.split(',').indexOf("EF") > -1 && (
+            <Card style={{ width: "100%" }}>
+              <Card.Body>
+                <PortfolioOptimization EF_BTN={this.EF_BTN} />
+              </Card.Body>
+            </Card>
+          )}
           {EF_BTN_flag && (
             <Card style={{ width: "100%" }}>
               <Card.Body>
@@ -163,18 +197,25 @@ class Dashboard extends Component {
                       placeholder=""
                     />
                   </Form.Group>
-                  <Button onClick={this.handleSubmit} variant="primary" type="submit">
+                  <Button
+                    onClick={this.handleSubmit}
+                    variant="primary"
+                    type="submit"
+                  >
                     Submit
                   </Button>
                 </Form>
               </Card.Body>
             </Card>
           )}
-          <Card style={{ width: "100%" }}>
-            <Card.Body>
-              <StockLookUp />
-            </Card.Body>
-          </Card>
+
+          {this.state.services.split(',').indexOf("LOOKUP") > -1 && (
+            <Card style={{ width: "100%" }}>
+              <Card.Body>
+                <StockLookUp />
+              </Card.Body>
+            </Card>
+          )}
         </Row>
         <br />
       </Container>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Link } from "react-router-dom";
-import { auth, signOut } from "../firebaseConfig";
+import { auth, signOut, createUserProfileDocument } from "../firebaseConfig";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -16,6 +16,22 @@ class Navigation extends React.Component {
     this.authNavbar.bind(this);
   }
 
+  componentDidMount() {
+    auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot(snapshot => {
+          this.setState({
+            user: {
+              id: snapshot.id,
+              ...snapshot.data()
+            }
+          });
+        });
+      }
+    });
+  }
+
   onAuthStateChanged = user => {
     this.setState({ isAuthenticated: !!user });
   };
@@ -27,6 +43,28 @@ class Navigation extends React.Component {
           style={{ flexDirection: "row" }}
           className="navbar-nav my-2 my-lg-0"
         >
+          <Button color="inherit">
+            <Link
+              to="/"
+              style={{ color: "white", textDecoration: "none" }}
+              className="nav-link"
+            >
+              {this.state.user && this.state.user.name
+                ? `Hi, ${this.state.user.name} 👋`
+                : ""}
+            </Link>
+          </Button>
+          {this.state.user && this.state.user.name == "Fady Azmy" && (
+            <Button color="inherit">
+              <Link
+                to="/admin"
+                style={{ color: "white", textDecoration: "none" }}
+                className="nav-link"
+              >
+                Admin
+              </Link>
+            </Button>
+          )}
           <Button color="inherit">
             <Link
               to="/profile"
