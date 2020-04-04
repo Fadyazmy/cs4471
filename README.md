@@ -10,4 +10,4 @@ Development:
 
 Deployment: 
 1. Run `npm build`
-2. Run `firebase deploy`
+2. Run `firebase deploy` ## to deploy to cloud (optional)
