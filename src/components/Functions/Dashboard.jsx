@@ -100,11 +100,11 @@ class Dashboard extends Component {
 
     axios
       .post(
-        "https://f2c56610.eu.ngrok.io/users?uid=OqtorhEjYza1tTkBsnxmhMDPibF3&tickers=[AAPL,MSFT,NFLX,TSLA]&quantity=[100,500,400,100]",
+        "http://157d2e42.ngrok.io/users?uid=OqtorhEjYza1tTkBsnxmhMDPibF3&tickers=[AAPL,MSFT,NFLX,TSLA]&quantity=[100,500,400,100]",
         body
       )
       .then(res => {
-        console.log("data data", res.data);
+        console.log("RES",res);
         this.setState({ price: res.data.price });
       });
   };
@@ -116,7 +116,6 @@ class Dashboard extends Component {
 
   render() {
     let { EF_BTN_flag } = this.state;
-    console.log("tickers:: ", this.state.tickers);
 
     let recommendations_temp = [];
     if (

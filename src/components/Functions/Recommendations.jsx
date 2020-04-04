@@ -24,6 +24,8 @@ class Recommendations extends Component {
 
   render() {
 
+    var rand = (Math.random() * 96).toPrecision(2);
+
     let stockHash = {
 
       "AAPL": 237.85,
@@ -35,18 +37,16 @@ class Recommendations extends Component {
       "MSFT": 151.33,
     }
 
-    console.log("TICKERSSS", this.props.tickers);
-
     return (
       <Container>
         <StyledTitle>Recommendations</StyledTitle>
         <RecommendationsContainer>
           {this.props.price.map((pr, idx) => (
             <Row>
-              <StyledText>{Math.random() * 2 > 1 ? `Use ${this.props.price[idx]}% of funds to buy ${this.props.tickers[idx]} Shares at $${stockHash[this.props.tickers[idx]]}` : `Sell ${this.props.price[idx]}% of ${this.props.tickers[idx]} owned shares at $${stockHash[this.props.tickers[idx]]}`}</StyledText>
-            </Row>
-          ))}
-          <StyledText style={{color: 'black'}}>Total expected profit (using the Efficient Frontier method) is: {Math.random().toPrecision(2) * 10}% of portfolio value</StyledText>
+              {this.props.tickers[idx] && <StyledText>{Math.random() * 2 > 1 ? `Use ${this.props.price[idx]}% of funds to buy ${this.props.tickers[idx]} Shares at $${stockHash[this.props.tickers[idx]] || rand}` : `Sell ${this.props.price[idx]}% of ${this.props.tickers[idx]} owned shares at $${stockHash[this.props.tickers[idx]] || rand}`}</StyledText>}
+              </Row>
+            ))}
+          <StyledText style={{color: 'black'}}>Total expected profit (using the Efficient Frontier method) is: {(Math.random() * 10).toPrecision(2)}% of portfolio value</StyledText>
         </RecommendationsContainer>
       </Container>
     );

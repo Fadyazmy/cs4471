@@ -12,13 +12,16 @@
     "bootstrap": "^4.4.1",
     "firebase": "^7.13.1",
     "material-ui-icons": "^1.0.0-beta.36",
+    "portfolio-allocation": "0.0.7",
+    "portfolio-analytics": "0.0.4",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.0",
     "react-dom": "^16.13.1",
     "react-firebaseui": "^4.1.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "yahoo-finance": "^0.3.6"
   },
   "scripts": {
     "start": "react-scripts start",
