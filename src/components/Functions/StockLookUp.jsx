@@ -43,7 +43,7 @@ class StockLookUp extends Component {
       // try {
       axios
         .post(
-          `http://331b03cb.eu.ngrok.io/plot.png?ticker=${this.state.ticker}&start=2015-01-01&end=2016-01-01`
+          `http://7135b78d.eu.ngrok.io/plot.png?ticker=${this.state.ticker}&start=2015-01-01&end=2016-01-01`
         )
         .then(resp => {
           console.log("RESP: ", resp);
