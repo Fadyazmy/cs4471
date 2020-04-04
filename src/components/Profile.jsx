@@ -8,7 +8,10 @@ class Profile extends Component {
       name: "",
       portfolio: ""
     },
-    showToast: false
+    showToast: false,
+    services: [],
+    services_list: [],
+    services_loaded: false
   };
 
   onChangeHandle = e => {
@@ -22,16 +25,33 @@ class Profile extends Component {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
         userRef.onSnapshot(snapshot => {
-          if (snapshot.data().balance == null) {
-            firestore
-              .doc(`/users/${snapshot.id}`)
-              .update({ balance: 100, num_transactions: 0 });
-          }
           this.setState({ user: { id: snapshot.id, ...snapshot.data() } });
         });
       }
       this.setState({ user: userAuth });
     });
+
+    firestore
+      .collection("registry")
+      .where("type", "==", "available")
+      .onSnapshot(snapshot => {
+        if (snapshot.empty) {
+          console.log("No user recommendations.");
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          //   console.log("doc.id: ", doc.id);
+          let { services, services_list } = doc.data();
+          let id = doc.id;
+          this.setState({
+            services,
+            id,
+            services_list,
+            services_loaded: true
+          });
+        });
+      });
   }
 
   handleSubmit = event => {
@@ -47,6 +67,29 @@ class Profile extends Component {
   };
 
   render() {
+    if (this.state.services_loaded == false) {
+      // firestore
+      //   .collection("registry")
+      //   .where("type", "==", "available")
+      //   .onSnapshot(snapshot => {
+      //     if (snapshot.empty) {
+      //       console.log("No user recommendations.");
+      //       return;
+      //     }
+      //     snapshot.forEach(doc => {
+      //       //   console.log("doc.id: ", doc.id);
+      //       let { services, services_list } = doc.data();
+      //       let id = doc.id;
+      //       this.setState({
+      //         services,
+      //         id,
+      //         services_list,
+      //         services_loaded: true
+      //       });
+      //     });
+      //   });
+    }
+
     return (
       <>
         <Row
@@ -106,6 +149,20 @@ class Profile extends Component {
               Submit
             </Button>
           </Form>
+          <h3>Disabled services</h3>
+          <br />
+          <Row>
+            <ul>
+              {this.state.services_list.length > 0 &&
+                this.state.services_list.split(",").map(serv => {
+                  return (
+                    this.state.services.split(",").indexOf(serv) == -1 && (
+                      <li> {serv} </li>
+                    )
+                  );
+                })}
+            </ul>
+          </Row>
         </Container>
       </>
     );

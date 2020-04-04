@@ -54,7 +54,7 @@ class Navigation extends React.Component {
                 : ""}
             </Link>
           </Button>
-          {this.state.user && this.state.user.name == "Fady Azmy" && (
+          {this.state.user && this.state.user.name == "Admin" && (
             <Button color="inherit">
               <Link
                 to="/admin"
