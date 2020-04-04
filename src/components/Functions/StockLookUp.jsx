@@ -3,14 +3,6 @@ import styled from "styled-components";
 import { Form, Button, Row, Container } from "react-bootstrap";
 import axios from "axios";
 
-// const Container = styled.div`
-//   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-//   border: 2px solid #3f51b5;
-//   border-radius: 25px;
-//   height: 150px;
-//   padding: 20px;
-// `;
-
 const StyledTitle = styled.h3`
   color: #3f51b5;
   text-align: center;
@@ -24,12 +16,25 @@ class StockLookUp extends Component {
     ticker: "",
     start_date: "",
     end_date: "",
-    error: false, 
+    error: false,
     loading: false
   };
 
+  doesFileExist(urlToFile) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("HEAD", urlToFile, false);
+    xhr.send();
+
+    if (xhr.status == "400") {
+      console.log("File doesn't exist");
+      return false;
+    } else {
+      console.log("File exists", xhr.response);
+      return true;
+    }
+  }
+
   render() {
-    // console.log("TEST STATE", this.state);
 
     const handleClick = e => {
       e.preventDefault();
@@ -40,10 +45,9 @@ class StockLookUp extends Component {
         start: "2015-01-01 ",
         end: "2016-01-01"
       };
-      // try {
       axios
         .post(
-          `http://331b03cb.eu.ngrok.io/plot.png?ticker=${this.state.ticker}&start=2015-01-01&end=2016-01-01`
+          `http://7135b78d.eu.ngrok.io/plot.png?ticker=${this.state.ticker}&start=2015-01-01&end=2016-01-01`
         )
         .then(resp => {
           console.log("RESP: ", resp);
@@ -51,15 +55,21 @@ class StockLookUp extends Component {
         .catch(err => {
           console.log("ERR: ", err);
         });
+
       setTimeout(() => {
-        try {
-          const img = require(`https://firebasestorage.googleapis.com/v0/b/cs4471-group5.appspot.com/o/${this.state.ticker}.png?alt=media`);
-          this.setState({ img, loading: false });
-        } catch (err) {
-          //Do whatever you want when the image failed to load here
+        if (
+          this.doesFileExist(
+            `https://firebasestorage.googleapis.com/v0/b/cs4471-group5.appspot.com/o/${this.state.ticker}.png?alt=media`
+          )
+        ) {
+          this.setState({
+            img: `https://firebasestorage.googleapis.com/v0/b/cs4471-group5.appspot.com/o/${this.state.ticker}.png?alt=media`,
+            loading: false
+          });
+        } else {
           this.setState({ error: true, loading: false });
         }
-      }, 7500);
+      }, 8500);
     };
 
     const onChangeHandle = e => {

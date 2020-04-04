@@ -11,12 +11,17 @@ class Home extends Component {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
         userRef.onSnapshot(snapshot => {
-          if (snapshot.data().balance == null) {
+          if (
+            snapshot.data().balance == null ||
+            snapshot.data().portfolio == null
+          ) {
             firestore
               .doc(`/users/${snapshot.id}`)
-              .update({ balance: 100, num_transactions: 0 });
+              .update({ balance: 100, num_transactions: 0, portfolio: "" });
           }
-          this.setState({ user: { id: snapshot.id, ...snapshot.data() } });
+          this.setState({
+            user: { id: snapshot.id, ...snapshot.data(), portfolio: [] }
+          });
         });
       }
       this.setState({ user: userAuth });
@@ -36,13 +41,8 @@ class Home extends Component {
          *   }
          */}
         {this.state.user
-          ? [
-          
-            <Dashboard user={this.state.user}/>
-        
-        ]
-          : [<div>(not signed in) - HOME PAGE</div>]
-          }
+          ? [<Dashboard user={this.state.user} />]
+          : [<div>(not signed in) - HOME PAGE</div>]}
       </div>
     );
   }
